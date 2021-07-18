@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="src/bootstrap/css/bootstrap.min.css">
+
+	<title>My Pokemon &copy 2021</title>
+	<style>
+		.bd-placeholder-img {
+			font-size: 1.125rem;
+			text-anchor: middle;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
+
+		@media (min-width: 768px) {
+			.bd-placeholder-img-lg {
+				font-size: 3.5rem;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<header>
+		<div class="collapse bg-dark" id="navbarHeader">
+			<div class="container">
+				<div class="row">
+					<div class="col-sm-8 col-md-7 py-4">
+						<h4 class="text-white">About</h4>
+						<p class="text-muted">This website provides a RESTful API interface to highly detailed objects
+							built from thousands of lines of data related to Pokémon. We specifically cover the video
+							game franchise. Using this website, you can consume information on Pokémon, their moves,
+							abilities, types, egg groups and much, much more.</p>
+					</div>
+					<div class="col-sm-4 offset-md-1 py-4">
+						<h4 class="text-white">Contact</h4>
+						<ul class="list-unstyled">
+							<li><a href="https://github.com/faizalnurrozi" class="text-white">Github</a></li>
+							<li><a href="https://www.linkedin.com/in/faizalnurrozi/" class="text-white">Linkedin</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="navbar navbar-dark bg-dark shadow-sm">
+			<div class="container d-flex justify-content-between">
+				<a href="index.html" class="navbar-brand d-flex align-items-center">
+					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor"
+						stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true" class="mr-2"
+						viewBox="0 0 24 24" focusable="false">
+						<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+						<circle cx="12" cy="13" r="4" />
+					</svg>
+					<strong>Pokemon</strong>
+				</a>
+				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarHeader"
+					aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+			</div>
+		</div>
+	</header>
+
+	<main role="main" id="main">
+
+		<div class="album py-5 bg-light">
+			<div class="container">
+
+				<div class="row pokemon-list">
+					<!-- Implement ajax JQuery from API Pokemon -->
+				</div>
+
+				<div class="row">
+					<div class="col-md-12 pokemon-pagination">
+						<!-- Generate pagiantion -->
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+	</main>
+
+
+	<div class="modal fade" id="modal-edit" data-backdrop="static" data-keyboard="false" tabindex="-1"
+		aria-labelledby="modal-edit" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="modal-edit-label">Edit</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<input type="text" class="form-control" id="pokemon-nickname" placeholder="Give nickname for this pokemon!" />
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary btn-save-nickname" data-dismiss="modal">Save</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal fade" id="modal-release" data-backdrop="static" data-keyboard="false" tabindex="-1"
+		aria-labelledby="modal-release" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="modal-release-label">Warning</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					Are you sure ?
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger btn-relase-save" data-dismiss="modal">Release</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<input type="hidden" id="pokemon-id" />
+	<input type="hidden" id="pokemon-pokemonID" />
+
+
+	<script src="src/jquery.js"></script>
+	<script src="src/bootstrap/js/bootstrap.bundle.js"></script>
+	<script>
+
+		function getLisData(page) {
+			
+			let username = "phincon";
+			let password = "fEm7>6,yep-&Q.Qk";
+			let perPage = 12;
+
+			$.ajax({
+				dataType: 'json',
+				type: 'get',
+				url: 'http://localhost:3002/phincon-catch/v1/pokemon?page=' + page + '&limit=' + perPage + '&order_by=name&sort=asc',
+				beforeSend: function (xhr) {
+					xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
+				},
+				success: function (pokemon) {
+
+					// Generate data html
+					let html = '';
+					for (const [key, value] of Object.entries(pokemon.data)) {
+
+						html += `
+							<div class="col-md-4">
+								<div class="card mb-4 shadow-sm">
+									<img src="${value.picture}" width="100%" height="225" class="bd-placeholder-img card-img-top" role="img" aria-label="Placeholder: Thumbnail" />
+ 
+									<div class="card-body">
+										<p class="card-text">${value.name}</p>
+										<div class="d-flex justify-content-between align-items-center">
+											<div class="btn-group">
+												<a href="detail.html?id=${value.pokemon_id}" class="btn btn-sm btn-outline-primary">Detail Pokemon</a>
+												<button type="button" class="btn btn-sm btn-edit-nicname btn-outline-success" data-id="${value.id}" data-pokemon-id="${value.pokemon_id}" data-name="${value.name}">Edit Nickname</a>
+												<button type="button" class="btn btn-sm btn-release btn-outline-danger" data-id="${value.id}" data-pokemon-id="${value.pokemon_id}" data-name="${value.name}">Release</a>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						`;
+
+					}
+
+					// Render data to list pokemon
+					let pokemonList = $('.pokemon-list');
+					pokemonList.html(html);
+
+					// Render pagination
+					let htmlPagination = ``;
+					htmlPagination += `<nav aria-label="Page navigation example"><ul class="pagination justify-content-center">`;
+					
+					if(page > 1)
+						htmlPagination += `<li class="page-item"><a class="page-link" href="#" onclick="javascript: getLisData(${page-1}); ">&laquo;</a></li>`;
+					else
+						htmlPagination += `<li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>`;
+					
+					
+					if(page > 3){
+						htmlPagination += `<li class="page-item"><a class="page-link" href="#" onclick="javascript: getLisData(1); ">1</a></li>`;
+						htmlPagination += `<li class="page-item disabled"><a class="page-link" href="#">&hellip;</a></li>`;
+					}
+
+					if (page-2 > 0){
+						htmlPagination += `<li class="page-item"><a class="page-link" href="#" onclick="javascript: getLisData(${page-2}); ">${page-2}</a></li>`;
+					}
+
+					if (page-1 > 0){
+						htmlPagination += `<li class="page-item"><a class="page-link" href="#" onclick="javascript: getLisData(${page-1}); ">${page-1}</a></li>`;
+					}
+
+					htmlPagination += `<li class="page-item active"><a class="page-link" href="#">${page}</a></li>`;
+
+					if (page + 1 < pokemon.meta.pagination.last_page + 1){
+						htmlPagination += `<li class="page-item"><a class="page-link" href="#" onclick="javascript: getLisData(${page+1}); ">${page+1}</a></li>`;
+					}
+
+					if (page + 2 < pokemon.meta.pagination.last_page + 2){
+						htmlPagination += `<li class="page-item"><a class="page-link" href="#" onclick="javascript: getLisData(${page+2}); ">${page+2}</a></li>`;
+					}
+					
+					if(page < pokemon.meta.pagination.last_page - 2){
+						htmlPagination += `<li class="page-item disabled"><a class="page-link" href="#">&hellip;</a></li>`;
+						htmlPagination += `<li class="page-item"><a class="page-link" href="#" onclick="javascript: getLisData(${pokemon.meta.pagination.last_page}); ">${pokemon.meta.pagination.last_page}</a></li>`;
+					}
+
+					if(page < pokemon.meta.pagination.last_page)
+						htmlPagination += `<li class="page-item"><a class="page-link" href="#" onclick="javascript: getLisData(${page+1}); ">&raquo;</a></li>`;
+					else
+						htmlPagination += `<li class="page-item disabled"><a class="page-link" href="#">&raquo;</a></li>`;
+					
+					
+					htmlPagination += `</ul></nav>`;
+					let pokemonPagination = $('.pokemon-pagination');
+					pokemonPagination.html(htmlPagination);
+
+				},
+				error: function (data) {
+					console.log(data);
+				},
+			});
+		}
+
+		getLisData(1);
+
+		$('#main').on('click', '.btn-edit-nicname', function(){
+
+			let id = $(this).attr('data-id');
+			let pokemonID = $(this).attr('data-pokemon-id');
+			let pokemonName = $(this).attr('data-name');
+			$('#pokemon-nickname').val(pokemonName);
+			$('#pokemon-pokemonID').val(pokemonID);
+			$('#pokemon-id').val(id);
+
+			$('#modal-edit').modal();
+
+		});
+
+		$('#main').on('click', '.btn-release', function(){
+
+			let id = $(this).attr('data-id');
+			$('#pokemon-id').val(id);
+
+			$('#modal-release').modal();
+
+		});
+
+		$('#modal-edit').on('click', '.btn-save-nickname', function(){
+
+			let username = "phincon";
+			let password = "fEm7>6,yep-&Q.Qk";
+
+			var dataPokemon = {
+				pokemon_id: parseInt($('#pokemon-pokemonID').val()),
+				name: $('#pokemon-nickname').val(),
+			};
+
+			$.ajax({
+				dataType: 'json',
+				type: 'PUT',
+				contentType: 'application/json',
+				url: 'http://localhost:3002/phincon-catch/v1/pokemon/' + $('#pokemon-id').val(),
+				beforeSend: function (xhr) {
+					xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
+				},
+				data: JSON.stringify(dataPokemon),
+				success: function (pokemon) {
+
+					getLisData(1);
+
+					$('#pokemon-nickname').val('')
+
+				},
+				error: function (data) {
+					console.log(data);
+				},
+			});
+
+		});
+
+		$('#modal-release').on('click', '.btn-relase-save', function(){
+
+			let username = "phincon";
+			let password = "fEm7>6,yep-&Q.Qk";
+
+			$.ajax({
+				dataType: 'json',
+				type: 'DELETE',
+				contentType: 'application/json',
+				url: 'http://localhost:3002/phincon-catch/v1/pokemon/' + $('#pokemon-id').val(),
+				beforeSend: function (xhr) {
+					xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
+				},
+				success: function (pokemon) {
+
+					getLisData(1);
+
+					$('#pokemon-nickname').val('')
+
+				},
+				error: function (data) {
+					console.log(data);
+				},
+			});
+
+		});
+
+	</script>
+</body>
+
+</html>
